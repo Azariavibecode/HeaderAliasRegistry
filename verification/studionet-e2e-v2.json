@@ -1,0 +1,448 @@
+{
+  "generated_at": "2026-10-05T09:46:32.672Z",
+  "network": "StudioNet",
+  "chain_id": 61999,
+  "contract": "0xf9259299a6e7ee45D09dCd3d08dd69DCb091B68d",
+  "contract_explorer_url": "https://explorer-studio.genlayer.com/address/0xf9259299a6e7ee45D09dCd3d08dd69DCb091B68d",
+  "wallets": {
+    "auxiliary_a": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+    "auxiliary_b": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5"
+  },
+  "source_commits": {
+    "baseline": "f1e64a2b69c74e0e4d4184b2fe278f45a4cb5639",
+    "equivalent": "babd628ad8c9269423bb8135250f7b8a7b4e2cf3",
+    "mismatch": "cf3654b8ce67569e80dc8eb220327bbbd2bc0a89"
+  },
+  "source_digests": {
+    "baseline": "ddc233466c4bdd7c48584cca0680e3b9d7f578aaab3b9d7aab19a015470b1bb9",
+    "equivalentHeaders": "f66369299e4e8cb651107292c436c1ef60561726c38e77c767d293cb013eb616",
+    "equivalentMigration": "6a4fead87da31d352668ad195c9eea6fa21f91ba813696c0e71f8a1a572143c9",
+    "mismatchHeaders": "ff11a2f565044e20f96d4d4668f9b053928b54bcc4a47203395309973fb5d9a4",
+    "mismatchMigration": "cd1c0e52a77d1ff6c8ef9b325debe19f04d01d4153e9168cb513abca07738f85"
+  },
+  "before": {
+    "blocked_count": 0,
+    "collision_count": 0,
+    "edge_count": 2,
+    "pair_count": 1,
+    "published_count": 1
+  },
+  "after": {
+    "blocked_count": 1,
+    "collision_count": 2,
+    "edge_count": 5,
+    "pair_count": 1,
+    "published_count": 1
+  },
+  "pair": {
+    "creator": "0x67a1a08fc4cf7d05c859d0d3d8398a3a30b1677e",
+    "mapping_policy": "ONE_TO_ONE",
+    "new_version": "v2",
+    "old_version": "v1",
+    "owner": "Azariavibecode",
+    "pair_id": 0,
+    "project": "acme-api-live-v2",
+    "published_edges": 1,
+    "repo": "HeaderAliasRegistry"
+  },
+  "resolution": {
+    "direction": "REQUEST",
+    "edge_id": 0,
+    "new_header": "Trace-Context",
+    "old_header": "X-Request-Trace",
+    "pair_id": 0,
+    "verdict": "VERIFIED_ALIAS"
+  },
+  "edges": {
+    "published": {
+      "confidence": "HIGH",
+      "direction": "REQUEST",
+      "edge_id": 0,
+      "migration_source": {
+        "commit": "babd628ad8c9269423bb8135250f7b8a7b4e2cf3",
+        "digest": "6a4fead87da31d352668ad195c9eea6fa21f91ba813696c0e71f8a1a572143c9",
+        "marker": "## MIGRATION X-Request-Trace TO Trace-Context",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/migration/v1-v2.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "new_header": "Trace-Context",
+      "new_source": {
+        "commit": "babd628ad8c9269423bb8135250f7b8a7b4e2cf3",
+        "digest": "f66369299e4e8cb651107292c436c1ef60561726c38e77c767d293cb013eb616",
+        "marker": "## HEADER Trace-Context",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/docs/v2/headers.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "old_header": "X-Request-Trace",
+      "old_source": {
+        "commit": "f1e64a2b69c74e0e4d4184b2fe278f45a4cb5639",
+        "digest": "ddc233466c4bdd7c48584cca0680e3b9d7f578aaab3b9d7aab19a015470b1bb9",
+        "marker": "## HEADER X-Request-Trace",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/docs/v1/headers.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "pair_id": 0,
+      "proposer": "0x7c87b10a3d43f3b3551414401f8b26b9f662bab5",
+      "reason_code": "FULLY_EQUIVALENT",
+      "state": "PUBLISHED",
+      "verdict": "VERIFIED_ALIAS"
+    },
+    "source_collision": {
+      "confidence": "HIGH",
+      "direction": "REQUEST",
+      "edge_id": 1,
+      "migration_source": {
+        "commit": "babd628ad8c9269423bb8135250f7b8a7b4e2cf3",
+        "digest": "6a4fead87da31d352668ad195c9eea6fa21f91ba813696c0e71f8a1a572143c9",
+        "marker": "## MIGRATION X-Request-Trace TO Request-Correlation",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/migration/v1-v2.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "new_header": "Request-Correlation",
+      "new_source": {
+        "commit": "babd628ad8c9269423bb8135250f7b8a7b4e2cf3",
+        "digest": "f66369299e4e8cb651107292c436c1ef60561726c38e77c767d293cb013eb616",
+        "marker": "## HEADER Request-Correlation",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/docs/v2/headers.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "old_header": "X-Request-Trace",
+      "old_source": {
+        "commit": "f1e64a2b69c74e0e4d4184b2fe278f45a4cb5639",
+        "digest": "ddc233466c4bdd7c48584cca0680e3b9d7f578aaab3b9d7aab19a015470b1bb9",
+        "marker": "## HEADER X-Request-Trace",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/docs/v1/headers.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "pair_id": 0,
+      "proposer": "0x67a1a08fc4cf7d05c859d0d3d8398a3a30b1677e",
+      "reason_code": "SOURCE_SLOT_OCCUPIED",
+      "state": "COLLISION_BLOCKED",
+      "verdict": "VERIFIED_ALIAS"
+    },
+    "target_collision": {
+      "confidence": "HIGH",
+      "direction": "REQUEST",
+      "edge_id": 2,
+      "migration_source": {
+        "commit": "babd628ad8c9269423bb8135250f7b8a7b4e2cf3",
+        "digest": "6a4fead87da31d352668ad195c9eea6fa21f91ba813696c0e71f8a1a572143c9",
+        "marker": "## MIGRATION X-Legacy-Trace TO Trace-Context",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/migration/v1-v2.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "new_header": "Trace-Context",
+      "new_source": {
+        "commit": "babd628ad8c9269423bb8135250f7b8a7b4e2cf3",
+        "digest": "f66369299e4e8cb651107292c436c1ef60561726c38e77c767d293cb013eb616",
+        "marker": "## HEADER Trace-Context",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/docs/v2/headers.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "old_header": "X-Legacy-Trace",
+      "old_source": {
+        "commit": "f1e64a2b69c74e0e4d4184b2fe278f45a4cb5639",
+        "digest": "ddc233466c4bdd7c48584cca0680e3b9d7f578aaab3b9d7aab19a015470b1bb9",
+        "marker": "## HEADER X-Legacy-Trace",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/docs/v1/headers.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "pair_id": 0,
+      "proposer": "0x7c87b10a3d43f3b3551414401f8b26b9f662bab5",
+      "reason_code": "TARGET_SLOT_OCCUPIED",
+      "state": "COLLISION_BLOCKED",
+      "verdict": "VERIFIED_ALIAS"
+    },
+    "mismatch": {
+      "confidence": "MEDIUM",
+      "direction": "REQUEST",
+      "edge_id": 3,
+      "migration_source": {
+        "commit": "cf3654b8ce67569e80dc8eb220327bbbd2bc0a89",
+        "digest": "cd1c0e52a77d1ff6c8ef9b325debe19f04d01d4153e9168cb513abca07738f85",
+        "marker": "## MIGRATION X-Request-Trace TO Retry-Delay",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/migration/v1-v2.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "new_header": "Retry-Delay",
+      "new_source": {
+        "commit": "cf3654b8ce67569e80dc8eb220327bbbd2bc0a89",
+        "digest": "ff11a2f565044e20f96d4d4668f9b053928b54bcc4a47203395309973fb5d9a4",
+        "marker": "## HEADER Retry-Delay",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/docs/v2/headers.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "old_header": "X-Request-Trace",
+      "old_source": {
+        "commit": "f1e64a2b69c74e0e4d4184b2fe278f45a4cb5639",
+        "digest": "ddc233466c4bdd7c48584cca0680e3b9d7f578aaab3b9d7aab19a015470b1bb9",
+        "marker": "## HEADER X-Request-Trace",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/docs/v1/headers.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "pair_id": 0,
+      "proposer": "0x7c87b10a3d43f3b3551414401f8b26b9f662bab5",
+      "reason_code": "DIRECTION_CHANGED",
+      "state": "BLOCKED",
+      "verdict": "SEMANTIC_MISMATCH"
+    },
+    "poisoned": {
+      "confidence": "",
+      "direction": "REQUEST",
+      "edge_id": 4,
+      "migration_source": {
+        "commit": "babd628ad8c9269423bb8135250f7b8a7b4e2cf3",
+        "digest": "6a4fead87da31d352668ad195c9eea6fa21f91ba813696c0e71f8a1a572143c9",
+        "marker": "## MIGRATION X-Request-Trace TO Trace-Context",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/migration/v1-v2.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "new_header": "Poison-Context",
+      "new_source": {
+        "commit": "babd628ad8c9269423bb8135250f7b8a7b4e2cf3",
+        "digest": "0000000000000000000000000000000000000000000000000000000000000000",
+        "marker": "## HEADER Trace-Context",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/docs/v2/headers.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "old_header": "X-Poison-Trace",
+      "old_source": {
+        "commit": "f1e64a2b69c74e0e4d4184b2fe278f45a4cb5639",
+        "digest": "ddc233466c4bdd7c48584cca0680e3b9d7f578aaab3b9d7aab19a015470b1bb9",
+        "marker": "## HEADER X-Request-Trace",
+        "owner": "Azariavibecode",
+        "path": "/fixtures/e2e/docs/v1/headers.md",
+        "repo": "HeaderAliasRegistry"
+      },
+      "pair_id": 0,
+      "proposer": "0x67a1a08fc4cf7d05c859d0d3d8398a3a30b1677e",
+      "reason_code": "",
+      "state": "PROPOSED",
+      "verdict": "PENDING"
+    }
+  },
+  "transactions": [
+    {
+      "label": "source_collision_register_new_reference",
+      "hash": "0xd9aa785a694d790104cc9f0f4bb0beca6bcd3830953db6636d21cbb4380535ab",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0xd9aa785a694d790104cc9f0f4bb0beca6bcd3830953db6636d21cbb4380535ab",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "source_collision_register_migration_guide",
+      "hash": "0x7652e8a4a37a04b010cf49afec4891ee0159a6655ba32e894155f5d004c8ddaa",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x7652e8a4a37a04b010cf49afec4891ee0159a6655ba32e894155f5d004c8ddaa",
+      "actor": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "source_collision_seal",
+      "hash": "0x49612be8de1e6c979b8305910c84e28bd3638db749f19dde97ceb6e621b01148",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x49612be8de1e6c979b8305910c84e28bd3638db749f19dde97ceb6e621b01148",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "source_collision_verify",
+      "hash": "0x523eb2596ce1b1cae4615f6645c110c3bf7fdca9542b15758778a965b14159d6",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x523eb2596ce1b1cae4615f6645c110c3bf7fdca9542b15758778a965b14159d6",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "source_collision_publish_attempt",
+      "hash": "0xb77d01daba44697376722ba9b400adc1e8127a58c0c8a7deee15b05ebeded063",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0xb77d01daba44697376722ba9b400adc1e8127a58c0c8a7deee15b05ebeded063",
+      "actor": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "target_collision_propose",
+      "hash": "0x8c896ccab02dc7096831ab9364a8785feba0fa0d8823f0cc91ce7c2a3ba8145e",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x8c896ccab02dc7096831ab9364a8785feba0fa0d8823f0cc91ce7c2a3ba8145e",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "target_collision_register_old_reference",
+      "hash": "0x195b6bca11a09ec4fa2ffc041bb131972c5b8d0e6cae2a673dd023380c3cfce7",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x195b6bca11a09ec4fa2ffc041bb131972c5b8d0e6cae2a673dd023380c3cfce7",
+      "actor": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "target_collision_register_new_reference",
+      "hash": "0x92dc9e99be3c18843ec72aef679e3a7e8c50c09100d852c287fd96ac34c94958",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x92dc9e99be3c18843ec72aef679e3a7e8c50c09100d852c287fd96ac34c94958",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "target_collision_register_migration_guide",
+      "hash": "0x0f803039234d9eafcd6d3c589d290b5d67edcc8b8e2232a43f04dd185b3d84e9",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x0f803039234d9eafcd6d3c589d290b5d67edcc8b8e2232a43f04dd185b3d84e9",
+      "actor": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "target_collision_seal",
+      "hash": "0x387ab69f5746eda754c8af0dc1891529eb78e0565c87fceee97c3fb6555bdf20",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x387ab69f5746eda754c8af0dc1891529eb78e0565c87fceee97c3fb6555bdf20",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "target_collision_verify",
+      "hash": "0xe3910a8acbc4979ec58fa76bc99d5cd73120ab702719a36539f29c41dc48a2a7",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0xe3910a8acbc4979ec58fa76bc99d5cd73120ab702719a36539f29c41dc48a2a7",
+      "actor": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "target_collision_publish_attempt",
+      "hash": "0xf7ec498a6510ce0261e0cbfaa3850e5f9bce679f7965908f8e53f51ad592db18",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0xf7ec498a6510ce0261e0cbfaa3850e5f9bce679f7965908f8e53f51ad592db18",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "mismatch_propose",
+      "hash": "0x3742f9afee45a1270a1b8d88977628fac94ed8913fd73f64223364c76dfb2bdf",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x3742f9afee45a1270a1b8d88977628fac94ed8913fd73f64223364c76dfb2bdf",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "mismatch_register_old_reference",
+      "hash": "0x88a12b1b4c6799e705aa9945622481d7d21642fd2b63713947a482b4ef2bc6f8",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x88a12b1b4c6799e705aa9945622481d7d21642fd2b63713947a482b4ef2bc6f8",
+      "actor": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "mismatch_register_new_reference",
+      "hash": "0x31af8ea15f197a6143146995734b322835c761d615d19c66cae770611b1117fa",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x31af8ea15f197a6143146995734b322835c761d615d19c66cae770611b1117fa",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "mismatch_register_migration_guide",
+      "hash": "0xe25235f3d67ae57f903c341e0b54274bbce801a927a4f8bb88aa93783f4f9396",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0xe25235f3d67ae57f903c341e0b54274bbce801a927a4f8bb88aa93783f4f9396",
+      "actor": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "mismatch_seal",
+      "hash": "0xab5aeb553e8751f917f700e200d164757ec0303c2d3bf145ab9da8d26276e547",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0xab5aeb553e8751f917f700e200d164757ec0303c2d3bf145ab9da8d26276e547",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "mismatch_verify",
+      "hash": "0x48361cb71aec1498ad1275e562c0b413def2a2f7ee64eb11cefc4d07bf1cd33b",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x48361cb71aec1498ad1275e562c0b413def2a2f7ee64eb11cefc4d07bf1cd33b",
+      "actor": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "mismatch_publish_attempt",
+      "hash": "0x70e8773b0f48a14bd970fb67b481e6b01348b891a3dcab99654abcb8bee05915",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x70e8773b0f48a14bd970fb67b481e6b01348b891a3dcab99654abcb8bee05915",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "poisoned_propose",
+      "hash": "0xbf4a5172635f614fca2cdcc59cafeaea22cf51dcd208cdbdbffe4c2d100625a9",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0xbf4a5172635f614fca2cdcc59cafeaea22cf51dcd208cdbdbffe4c2d100625a9",
+      "actor": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "poisoned_register_old",
+      "hash": "0x57edcb187e810fa6c51852d5a3366f9676d7fe849c408102341263a6e49561ff",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x57edcb187e810fa6c51852d5a3366f9676d7fe849c408102341263a6e49561ff",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "poisoned_register_new_attempt",
+      "hash": "0x8ba8d8ae2b39cdda8bf2f1d2311063968a93cbe74297b1409ce6cc3249b54bda",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x8ba8d8ae2b39cdda8bf2f1d2311063968a93cbe74297b1409ce6cc3249b54bda",
+      "actor": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "poisoned_seal_attempt",
+      "hash": "0x02cdcb730c85229e87ea941d8a494726f58ab2b894cb59f1f1b9f75f58af1f27",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x02cdcb730c85229e87ea941d8a494726f58ab2b894cb59f1f1b9f75f58af1f27",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "replay_verify_attempt",
+      "hash": "0x29ad3e4b24ad7e0507dcdab56df3b4fdb0c962116fafacdc8d99f84a5730808f",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x29ad3e4b24ad7e0507dcdab56df3b4fdb0c962116fafacdc8d99f84a5730808f",
+      "actor": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "replay_publish_attempt",
+      "hash": "0x0ca0bba1d3ef3efdc074adbee6ca5db2c512febb3fe4681c102433e97b3517c9",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0x0ca0bba1d3ef3efdc074adbee6ca5db2c512febb3fe4681c102433e97b3517c9",
+      "actor": "0x7C87B10a3d43F3b3551414401F8b26B9F662bAB5",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    },
+    {
+      "label": "replay_evidence_attempt",
+      "hash": "0xbf71737818d8715daa0d377ed56e01cd6dba33d24093d49b35beb5a5a0c2eaf3",
+      "explorer_url": "https://explorer-studio.genlayer.com/transactions/0xbf71737818d8715daa0d377ed56e01cd6dba33d24093d49b35beb5a5a0c2eaf3",
+      "actor": "0x67A1A08Fc4cf7D05c859d0d3D8398a3A30B1677e",
+      "status": "FINALIZED",
+      "result_name": "MAJORITY_AGREE"
+    }
+  ]
+}

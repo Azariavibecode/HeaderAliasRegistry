@@ -6,7 +6,7 @@ import { writeFileSync } from "node:fs";
 const keys = [process.env.TEST_WALLET_A_PRIVATE_KEY, process.env.TEST_WALLET_B_PRIVATE_KEY];
 if (keys.some((key) => !/^(0x)?[0-9a-fA-F]{64}$/.test(key || ""))) throw new Error("Two auxiliary keys required");
 const wallets = keys.map((key) => privateKeyToAccount(key.startsWith("0x") ? key : `0x${key}`));
-const contract = "0xd1ff96B6a3E520EB384Ca702dFc1b23ca0f633eB";
+const contract = "0xf9259299a6e7ee45D09dCd3d08dd69DCb091B68d";
 const explorer = "https://explorer-studio.genlayer.com";
 const reader = createClient({ chain: studionet });
 const writer = (wallet) => createClient({ chain: studionet, account: wallet });
@@ -36,28 +36,37 @@ const mismatchMigration = src(commits.mismatch, "/fixtures/e2e/migration/v1-v2.m
 
 async function acquire(edgeId, prefix) {
   for (const [index, slot] of ["OLD_REFERENCE", "NEW_REFERENCE", "MIGRATION_GUIDE"].entries()) {
-    await write(wallets[index % 2], "register_evidence", [edgeId, slot], `${prefix}_register_${slot.toLowerCase()}`);
-    const evidence = await parse("get_evidence", [edgeId, slot]);
+    let evidence = await parse("get_evidence", [edgeId, slot]);
+    if (evidence.error) {
+      await write(wallets[index % 2], "register_evidence", [edgeId, slot], `${prefix}_register_${slot.toLowerCase()}`);
+      evidence = await parse("get_evidence", [edgeId, slot]);
+    }
     if (evidence.status !== "VERIFIED" || evidence.slot !== slot || !/^[0-9a-f]{64}$/.test(evidence.digest)) throw new Error(`${prefix} evidence readback failed`);
   }
-  await write(wallets[1], "seal_edge", [edgeId], `${prefix}_seal`);
+  if ((await parse("get_edge", [edgeId])).state === "PROPOSED") await write(wallets[1], "seal_edge", [edgeId], `${prefix}_seal`);
   if ((await parse("get_edge", [edgeId])).state !== "SEALED") throw new Error(`${prefix} seal failed`);
 }
 
 const before = await parse("get_counts");
-if (before.pair_count !== 0 || before.edge_count !== 0) throw new Error(`Expected fresh deployment: ${JSON.stringify(before)}`);
-await write(wallets[0], "create_version_pair", ["acme-api-live-v2", "v1", "v2", "Azariavibecode", "HeaderAliasRegistry", "ONE_TO_ONE"], "happy_create_pair");
 const pairId = 0n;
-
-await write(wallets[1], "propose_alias", [pairId, "X-Request-Trace", "Trace-Context", "REQUEST", old("## HEADER X-Request-Trace"), newer("## HEADER Trace-Context"), migration("## MIGRATION X-Request-Trace TO Trace-Context")], "happy_propose");
-await acquire(0n, "happy");
-await write(wallets[0], "verify_alias", [0n], "happy_verify");
+if (before.pair_count === 0 && before.edge_count === 0) {
+  await write(wallets[0], "create_version_pair", ["acme-api-live-v2", "v1", "v2", "Azariavibecode", "HeaderAliasRegistry", "ONE_TO_ONE"], "happy_create_pair");
+  await write(wallets[1], "propose_alias", [pairId, "X-Request-Trace", "Trace-Context", "REQUEST", old("## HEADER X-Request-Trace"), newer("## HEADER Trace-Context"), migration("## MIGRATION X-Request-Trace TO Trace-Context")], "happy_propose");
+  await acquire(0n, "happy");
+  await write(wallets[0], "verify_alias", [0n], "happy_verify");
+} else {
+  const checkpoint = await parse("get_edge", [0n]);
+  if (before.pair_count !== 1 || before.edge_count < 1 || before.edge_count > 2 || !["VERIFIED", "PUBLISHED"].includes(checkpoint.state) || checkpoint.verdict !== "VERIFIED_ALIAS") {
+    throw new Error(`Unsafe checkpoint: ${JSON.stringify({ before, checkpoint })}`);
+  }
+  console.log("resuming_from_verified_edge_0");
+}
 if ((await parse("get_edge", [0n])).verdict !== "VERIFIED_ALIAS") throw new Error("Happy verdict mismatch");
-await write(wallets[1], "publish_alias", [0n], "happy_publish");
+if ((await parse("get_edge", [0n])).state !== "PUBLISHED") await write(wallets[1], "publish_alias", [0n], "happy_publish");
 const resolution = await parse("resolve_alias", [pairId, "x-request-trace"]);
 if (resolution.new_header !== "Trace-Context" || resolution.edge_id !== 0) throw new Error("Happy resolution mismatch");
 
-await write(wallets[0], "propose_alias", [pairId, "X-Request-Trace", "Request-Correlation", "REQUEST", old("## HEADER X-Request-Trace"), newer("## HEADER Request-Correlation"), migration("## MIGRATION X-Request-Trace TO Request-Correlation")], "source_collision_propose");
+if ((await parse("get_counts")).edge_count === 1) await write(wallets[0], "propose_alias", [pairId, "X-Request-Trace", "Request-Correlation", "REQUEST", old("## HEADER X-Request-Trace"), newer("## HEADER Request-Correlation"), migration("## MIGRATION X-Request-Trace TO Request-Correlation")], "source_collision_propose");
 await acquire(1n, "source_collision"); await write(wallets[1], "verify_alias", [1n], "source_collision_verify");
 const graphBeforeSource = await parse("resolve_alias", [pairId, "X-Request-Trace"]);
 await write(wallets[0], "publish_alias", [1n], "source_collision_publish_attempt");
