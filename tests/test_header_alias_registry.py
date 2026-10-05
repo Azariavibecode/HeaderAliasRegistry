@@ -69,9 +69,14 @@ def propose(vm, contract, actor, old_header="X-Request-Trace", new_header="Trace
             source(candidate, PATH_NEW, "## HEADER " + new_header),
             source(candidate, PATH_MIGRATION, migration_marker))
 
+def acquire_and_seal(contract, edge_id):
+    for slot in ["OLD_REFERENCE", "NEW_REFERENCE", "MIGRATION_GUIDE"]:
+        assert contract.register_evidence(edge_id, slot) == "EVIDENCE_REGISTERED"
+    assert contract.seal_edge(edge_id) == "SEALED"
+
 def test_happy_publish_and_resolve(setup, direct_bob):
     vm, contract, deployer = setup; assert create_pair(vm, contract, direct_bob) == 0
-    assert propose(vm, contract, direct_bob) == 0; mock_sources(vm)
+    assert propose(vm, contract, direct_bob) == 0; mock_sources(vm); acquire_and_seal(contract, 0)
     vm.mock_llm(r"Verify one proposed HTTP header rename.*", result("valid"))
     assert contract.verify_alias(0) == "VERIFIED_ALIAS"
     assert contract.publish_alias(0) == "PUBLISHED"
@@ -81,7 +86,7 @@ def test_happy_publish_and_resolve(setup, direct_bob):
 def test_semantic_mismatch_never_resolves(setup, direct_bob):
     vm, contract, _ = setup; create_pair(vm, contract, direct_bob)
     assert propose(vm, contract, direct_bob, new_header="Retry-Delay", candidate=BAD) == 0
-    mock_sources(vm, BAD); vm.mock_llm(r"Verify one proposed HTTP header rename.*", result("mismatch"))
+    mock_sources(vm, BAD); acquire_and_seal(contract, 0); vm.mock_llm(r"Verify one proposed HTTP header rename.*", result("mismatch"))
     assert contract.verify_alias(0) == "SEMANTIC_MISMATCH"
     assert contract.publish_alias(0) == "EDGE_NOT_PUBLISHABLE"
     assert "error" in json.loads(contract.resolve_alias(0, "X-Request-Trace"))
@@ -93,14 +98,16 @@ def test_source_failures_fail_closed(setup, direct_bob, failure):
     candidate = source(NEW, PATH_NEW, "## HEADER Trace-Context", "0" * 64 if failure == "digest" else None)
     migration = source(NEW, PATH_MIGRATION, "## MIGRATION X-Request-Trace TO Trace-Context")
     with vm.prank(direct_bob): contract.propose_alias(0, "X-Request-Trace", "Trace-Context", "REQUEST", old, candidate, migration)
-    mock_commit(vm, OLD, [PATH_OLD]); mock_commit(vm, NEW, [PATH_NEW, PATH_MIGRATION],
+    mock_commit(vm, OLD, [PATH_OLD]); mock_commit(vm, NEW, [PATH_NEW],
         missing=PATH_NEW if failure == "missing" else None, bad_blob=failure == "blob")
-    assert contract.verify_alias(0) == "SOURCE_UNVERIFIED"
+    assert contract.register_evidence(0, "OLD_REFERENCE") == "EVIDENCE_REGISTERED"
+    assert contract.register_evidence(0, "NEW_REFERENCE") == "SOURCE_UNVERIFIED"
+    assert contract.seal_edge(0) == "EVIDENCE_INCOMPLETE"
     assert contract.publish_alias(0) == "EDGE_NOT_PUBLISHABLE"
 
 def test_source_collision_is_deterministic(setup, direct_bob):
     vm, contract, _ = setup; create_pair(vm, contract, direct_bob)
-    propose(vm, contract, direct_bob); mock_sources(vm)
+    propose(vm, contract, direct_bob); mock_sources(vm); acquire_and_seal(contract, 0)
     vm.mock_llm(r"Verify one proposed HTTP header rename.*", result("valid", 0)); contract.verify_alias(0)
     # A second independently verified edge competes for the same source slot.
     with vm.prank(direct_bob):
@@ -108,7 +115,7 @@ def test_source_collision_is_deterministic(setup, direct_bob):
             source(OLD, PATH_OLD, "## HEADER X-Request-Trace"),
             source(NEW, PATH_NEW, "## HEADER Trace-Context"),
             source(NEW, PATH_MIGRATION, "## MIGRATION X-Request-Trace TO Trace-Context"))
-    vm._llm_mocks.clear(); vm.mock_llm(r"Verify one proposed HTTP header rename.*", result("valid", 1)); contract.verify_alias(1)
+    acquire_and_seal(contract, 1); vm._llm_mocks.clear(); vm.mock_llm(r"Verify one proposed HTTP header rename.*", result("valid", 1)); contract.verify_alias(1)
     assert contract.publish_alias(0) == "PUBLISHED"
     counts = json.loads(contract.get_counts()); resolved = contract.resolve_alias(0, "X-Request-Trace")
     assert contract.publish_alias(1) == "SOURCE_COLLISION"
@@ -118,23 +125,23 @@ def test_source_collision_is_deterministic(setup, direct_bob):
 
 def test_target_collision_one_to_one(setup, direct_bob):
     vm, contract, _ = setup; create_pair(vm, contract, direct_bob)
-    propose(vm, contract, direct_bob); mock_sources(vm)
+    propose(vm, contract, direct_bob); mock_sources(vm); acquire_and_seal(contract, 0)
     vm.mock_llm(r"Verify one proposed HTTP header rename.*", result("valid", 0)); contract.verify_alias(0); contract.publish_alias(0)
     with vm.prank(direct_bob):
         contract.propose_alias(0, "X-Correlation", "Trace-Context", "REQUEST",
             source(OLD, PATH_OLD, "## HEADER X-Request-Trace"), source(NEW, PATH_NEW, "## HEADER Trace-Context"),
             source(NEW, PATH_MIGRATION, "## MIGRATION X-Request-Trace TO Trace-Context"))
-    vm._llm_mocks.clear(); vm.mock_llm(r"Verify one proposed HTTP header rename.*", result("valid", 1)); contract.verify_alias(1)
+    acquire_and_seal(contract, 1); vm._llm_mocks.clear(); vm.mock_llm(r"Verify one proposed HTTP header rename.*", result("valid", 1)); contract.verify_alias(1)
     assert contract.publish_alias(1) == "TARGET_COLLISION"
 
 def test_bad_positive_and_prompt_identity_are_inconclusive(setup, direct_bob):
-    vm, contract, _ = setup; create_pair(vm, contract, direct_bob); propose(vm, contract, direct_bob); mock_sources(vm)
+    vm, contract, _ = setup; create_pair(vm, contract, direct_bob); propose(vm, contract, direct_bob); mock_sources(vm); acquire_and_seal(contract, 0)
     payload = json.loads(result("valid")); payload["same_value_model"] = False
     vm.mock_llm(r"Verify one proposed HTTP header rename.*", json.dumps(payload))
     assert contract.verify_alias(0) == "INCONCLUSIVE"
 
 def test_prompt_injection_cannot_change_edge_identity(setup, direct_bob):
-    vm, contract, _ = setup; create_pair(vm, contract, direct_bob); propose(vm, contract, direct_bob); mock_sources(vm)
+    vm, contract, _ = setup; create_pair(vm, contract, direct_bob); propose(vm, contract, direct_bob); mock_sources(vm); acquire_and_seal(contract, 0)
     payload = json.loads(result("valid")); payload["edge_id"] = 999
     vm.mock_llm(r"Verify one proposed HTTP header rename.*", json.dumps(payload))
     assert contract.verify_alias(0) == "INCONCLUSIVE"
@@ -154,12 +161,28 @@ def test_wrong_authority_and_revision_are_rejected(setup, direct_bob):
             json.dumps(migration)) == "MIGRATION_REVISION_MISMATCH"
 
 def test_replay_and_invalid_paths_preserve_state(setup, direct_bob):
-    vm, contract, _ = setup; create_pair(vm, contract, direct_bob); propose(vm, contract, direct_bob); mock_sources(vm)
+    vm, contract, _ = setup; create_pair(vm, contract, direct_bob); propose(vm, contract, direct_bob); mock_sources(vm); acquire_and_seal(contract, 0)
     vm.mock_llm(r"Verify one proposed HTTP header rename.*", result("valid")); contract.verify_alias(0); contract.publish_alias(0)
     before = (contract.get_pair(0), contract.get_edge(0), contract.get_counts(), contract.resolve_alias(0, "X-Request-Trace"))
-    assert contract.verify_alias(0) == "EDGE_NOT_PROPOSED" and contract.publish_alias(0) == "EDGE_NOT_PUBLISHABLE"
+    assert contract.verify_alias(0) == "EDGE_NOT_SEALED" and contract.publish_alias(0) == "EDGE_NOT_PUBLISHABLE"
     assert before == (contract.get_pair(0), contract.get_edge(0), contract.get_counts(), contract.resolve_alias(0, "X-Request-Trace"))
     with vm.prank(direct_bob): assert contract.create_version_pair("x", "v1", "v1", OWNER, REPO, "BAD") == "INVALID_PAIR"
+
+def test_evidence_completeness_duplicate_and_post_seal_guards(setup, direct_bob):
+    vm, contract, _ = setup; create_pair(vm, contract, direct_bob); propose(vm, contract, direct_bob); mock_sources(vm)
+    assert contract.seal_edge(0) == "EVIDENCE_INCOMPLETE"
+    assert contract.register_evidence(0, "OLD_REFERENCE") == "EVIDENCE_REGISTERED"
+    old_snapshot = contract.get_evidence(0, "OLD_REFERENCE")
+    assert contract.register_evidence(0, "OLD_REFERENCE") == "EVIDENCE_ALREADY_REGISTERED"
+    assert contract.get_evidence(0, "OLD_REFERENCE") == old_snapshot
+    assert contract.seal_edge(0) == "EVIDENCE_INCOMPLETE"
+    assert contract.register_evidence(0, "NEW_REFERENCE") == "EVIDENCE_REGISTERED"
+    assert contract.register_evidence(0, "MIGRATION_GUIDE") == "EVIDENCE_REGISTERED"
+    assert contract.seal_edge(0) == "SEALED"
+    before = (contract.get_edge(0), contract.get_evidence(0, "NEW_REFERENCE"), contract.get_counts())
+    assert contract.register_evidence(0, "NEW_REFERENCE") == "EDGE_NOT_OPEN"
+    assert contract.seal_edge(0) == "EDGE_NOT_OPEN"
+    assert before == (contract.get_edge(0), contract.get_evidence(0, "NEW_REFERENCE"), contract.get_counts())
 
 def test_deployer_has_no_privilege(setup, direct_bob):
     vm, contract, deployer = setup; create_pair(vm, contract, direct_bob)

@@ -9,6 +9,7 @@ python -m pytest -q
 Coverage includes:
 
 - verified alias publication and resolution;
+- independent one-source acquisition, three-slot completeness and evidence sealing;
 - semantic mismatch;
 - digest, missing-source and blob-identity failures;
 - source-slot and target-slot collision races;

@@ -18,6 +18,7 @@ class Contract(gl.Contract):
     edge_keys: TreeMap[str, str]
     source_slots: TreeMap[str, str]
     target_slots: TreeMap[str, str]
+    evidence: TreeMap[str, str]
 
     def __init__(self):
         self.pair_count = u256(0)
@@ -116,6 +117,20 @@ class Contract(gl.Contract):
     def _slot(self, pair_id: int, header: str) -> str:
         return str(pair_id) + ":" + header.lower()
 
+    def _evidence_key(self, edge_id: int, slot: str) -> str:
+        return str(edge_id) + ":" + slot
+
+    def _extract_section(self, text: str, marker: str) -> typing.Any:
+        start = text.find(marker)
+        if start < 0 or text.count(marker) != 1:
+            return None
+        next_heading = text.find("\n## ", start + len(marker))
+        end = len(text) if next_heading < 0 else next_heading
+        section = text[start:end].strip()
+        if len(section) < len(marker) or len(section) > 4000:
+            return None
+        return section
+
     @gl.public.write
     def create_version_pair(self, project: str, old_version: str, new_version: str, owner: str, repo: str, mapping_policy: str) -> typing.Any:
         if not self._token(project, 2, 64) or not self._token(old_version) or not self._token(new_version):
@@ -170,13 +185,66 @@ class Contract(gl.Contract):
         return edge_id
 
     @gl.public.write
-    def verify_alias(self, edge_id: u256) -> str:
+    def register_evidence(self, edge_id: u256, slot: str) -> str:
+        if edge_id >= self.edge_count:
+            return "EDGE_NOT_FOUND"
+        if slot not in ["OLD_REFERENCE", "NEW_REFERENCE", "MIGRATION_GUIDE"]:
+            return "INVALID_EVIDENCE_SLOT"
+        key = str(int(edge_id))
+        edge = json.loads(self.edges[key])
+        if edge["state"] != "PROPOSED":
+            return "EDGE_NOT_OPEN"
+        evidence_key = self._evidence_key(int(edge_id), slot)
+        if self.evidence.get(evidence_key, "") != "":
+            return "EVIDENCE_ALREADY_REGISTERED"
+        source_field = {"OLD_REFERENCE": "old_source", "NEW_REFERENCE": "new_source", "MIGRATION_GUIDE": "migration_source"}[slot]
+        source = edge[source_field]
+
+        def acquire() -> str:
+            try:
+                text = self._verified_text(source)
+                if text is None:
+                    return json.dumps({"digest": "", "section": "", "slot": slot, "status": "SOURCE_UNVERIFIED"}, sort_keys=True, separators=(",", ":"))
+                section = self._extract_section(text, source["marker"])
+                if section is None:
+                    return json.dumps({"digest": "", "section": "", "slot": slot, "status": "SOURCE_UNVERIFIED"}, sort_keys=True, separators=(",", ":"))
+                return json.dumps({"digest": hashlib.sha256(section.encode("utf-8")).hexdigest(), "section": section,
+                                   "slot": slot, "status": "VERIFIED"}, sort_keys=True, separators=(",", ":"))
+            except Exception:
+                return json.dumps({"digest": "", "section": "", "slot": slot, "status": "SOURCE_UNVERIFIED"}, sort_keys=True, separators=(",", ":"))
+
+        snapshot_json = gl.eq_principle.strict_eq(acquire)
+        snapshot = json.loads(snapshot_json)
+        if snapshot.get("status") != "VERIFIED" or snapshot.get("slot") != slot:
+            return "SOURCE_UNVERIFIED"
+        if not self._hex(str(snapshot.get("digest", "")), 64) or not isinstance(snapshot.get("section"), str):
+            return "SOURCE_UNVERIFIED"
+        self.evidence[evidence_key] = snapshot_json
+        return "EVIDENCE_REGISTERED"
+
+    @gl.public.write
+    def seal_edge(self, edge_id: u256) -> str:
         if edge_id >= self.edge_count:
             return "EDGE_NOT_FOUND"
         key = str(int(edge_id))
         edge = json.loads(self.edges[key])
         if edge["state"] != "PROPOSED":
-            return "EDGE_NOT_PROPOSED"
+            return "EDGE_NOT_OPEN"
+        for slot in ["OLD_REFERENCE", "NEW_REFERENCE", "MIGRATION_GUIDE"]:
+            if self.evidence.get(self._evidence_key(int(edge_id), slot), "") == "":
+                return "EVIDENCE_INCOMPLETE"
+        edge["state"] = "SEALED"
+        self.edges[key] = json.dumps(edge, sort_keys=True, separators=(",", ":"))
+        return "SEALED"
+
+    @gl.public.write
+    def verify_alias(self, edge_id: u256) -> str:
+        if edge_id >= self.edge_count:
+            return "EDGE_NOT_FOUND"
+        key = str(int(edge_id))
+        edge = json.loads(self.edges[key])
+        if edge["state"] != "SEALED":
+            return "EDGE_NOT_SEALED"
         pair = json.loads(self.pairs[str(edge["pair_id"])])
         expected_edge = edge["edge_id"]
         expected_pair = edge["pair_id"]
@@ -190,11 +258,9 @@ class Contract(gl.Contract):
 
         def evaluate() -> str:
             try:
-                old_text = self._verified_text(edge["old_source"])
-                new_text = self._verified_text(edge["new_source"])
-                migration_text = self._verified_text(edge["migration_source"])
-                if old_text is None or new_text is None or migration_text is None:
-                    return safe_result("SOURCE_UNVERIFIED", "SOURCE_INTEGRITY_FAILURE")
+                old_text = json.loads(self.evidence[self._evidence_key(expected_edge, "OLD_REFERENCE")])["section"]
+                new_text = json.loads(self.evidence[self._evidence_key(expected_edge, "NEW_REFERENCE")])["section"]
+                migration_text = json.loads(self.evidence[self._evidence_key(expected_edge, "MIGRATION_GUIDE")])["section"]
                 verdicts = ["VERIFIED_ALIAS", "SEMANTIC_MISMATCH", "INCONCLUSIVE"]
                 reasons = ["FULLY_EQUIVALENT", "PURPOSE_CHANGED", "DIRECTION_CHANGED", "VALUE_MODEL_CHANGED",
                            "SECURITY_WEAKENED", "MIGRATION_SCOPE_MISMATCH", "AMBIGUOUS_EVIDENCE"]
@@ -307,6 +373,13 @@ class Contract(gl.Contract):
     @gl.public.view
     def get_edge(self, edge_id: u256) -> str:
         return self.edges[str(int(edge_id))] if edge_id < self.edge_count else json.dumps({"error": "EDGE_NOT_FOUND"}, sort_keys=True)
+
+    @gl.public.view
+    def get_evidence(self, edge_id: u256, slot: str) -> str:
+        if edge_id >= self.edge_count:
+            return json.dumps({"error": "EDGE_NOT_FOUND"}, sort_keys=True)
+        value = self.evidence.get(self._evidence_key(int(edge_id), slot), "")
+        return value if value != "" else json.dumps({"error": "EVIDENCE_NOT_FOUND"}, sort_keys=True)
 
     @gl.public.view
     def get_counts(self) -> str:

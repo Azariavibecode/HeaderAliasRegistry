@@ -17,6 +17,8 @@ The contract proves consistency between exact publisher-controlled documentation
 ```text
 version pair
   → proposed semantic edge
+  → independently register OLD / NEW / MIGRATION evidence
+  → seal immutable evidence snapshots
   → VERIFIED | BLOCKED
   → deterministic graph-slot publication
   → PUBLISHED | COLLISION_BLOCKED
@@ -39,11 +41,14 @@ Any false, missing, malformed, unavailable or disagreeing observation fails clos
 ```text
 create_version_pair(...)
 propose_alias(...)
+register_evidence(edge_id, slot)
+seal_edge(edge_id)
 verify_alias(edge_id)
 publish_alias(edge_id)
 resolve_alias(pair_id, old_header)
 get_pair(pair_id)
 get_edge(edge_id)
+get_evidence(edge_id, slot)
 get_counts()
 ```
 

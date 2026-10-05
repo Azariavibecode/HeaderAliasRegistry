@@ -8,13 +8,13 @@ Falsifiers are purpose, direction, value-model, scope or security differences; w
 
 ## Source authentication
 
-Each edge seals old reference, new reference and migration guide locators. Every locator binds GitHub owner, repository, full commit, canonical path, SHA-256 and a unique section marker. Validators independently resolve commit and tree objects, verify the exact blob, recompute Git blob SHA-1 and SHA-256, and require one marker occurrence.
+Each edge binds old reference, new reference and migration guide locators. Every locator binds GitHub owner, repository, full commit, canonical path, SHA-256 and a unique section marker. Each `register_evidence` transaction independently resolves exactly one commit and tree object, verifies its exact blob, recomputes Git blob SHA-1 and SHA-256, extracts one bounded section and stores the consensus-equal snapshot.
 
-All sources must belong to the authority registered for the version pair. The migration guide must be committed at the exact new-reference revision.
+All sources must belong to the authority registered for the version pair. The migration guide must be committed at the exact new-reference revision. `seal_edge` requires all three authenticated snapshots and makes the evidence set immutable.
 
 ## Reasoning topology
 
-Comparative consensus returns five explicit booleans plus a bounded verdict and reason. `VERIFIED_ALIAS` is accepted only when all booleans are true. The model cannot publish an edge or decide collision state.
+Comparative consensus reads only the sealed bounded sections, performs no web acquisition, and returns five explicit booleans plus a bounded verdict and reason. `VERIFIED_ALIAS` is accepted only when all booleans are true. The model cannot publish an edge or decide collision state.
 
 ## Bipartite graph consequence
 
