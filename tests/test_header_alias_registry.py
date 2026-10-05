@@ -24,14 +24,11 @@ def source(commit, path, marker, digest=None):
 
 def result(kind, edge=0):
     values = {
-        "valid": ("HIGH", "FULLY_EQUIVALENT", True, True, True, True, True, "VERIFIED_ALIAS"),
-        "mismatch": ("HIGH", "PURPOSE_CHANGED", False, False, False, True, True, "SEMANTIC_MISMATCH"),
-        "ambiguous": ("LOW", "AMBIGUOUS_EVIDENCE", False, False, False, False, False, "INCONCLUSIVE"),
+        "valid": "FULLY_EQUIVALENT",
+        "mismatch": "PURPOSE_CHANGED",
+        "ambiguous": "AMBIGUOUS_EVIDENCE",
     }
-    confidence, reason, direction, purpose, model, scope, security, verdict = values[kind]
-    return json.dumps({"confidence": confidence, "edge_id": edge, "pair_id": 0, "reason_code": reason,
-                       "same_direction": direction, "same_purpose": purpose, "same_value_model": model,
-                       "scope_matches": scope, "security_not_weakened": security, "verdict": verdict})
+    return json.dumps({"reason_code": values[kind]})
 
 def mock_commit(vm, commit, paths, missing=None, bad_blob=False):
     api = f"https://api.github.com/repos/{OWNER}/{REPO}"; tree = TREES[commit]
@@ -136,13 +133,13 @@ def test_target_collision_one_to_one(setup, direct_bob):
 
 def test_bad_positive_and_prompt_identity_are_inconclusive(setup, direct_bob):
     vm, contract, _ = setup; create_pair(vm, contract, direct_bob); propose(vm, contract, direct_bob); mock_sources(vm); acquire_and_seal(contract, 0)
-    payload = json.loads(result("valid")); payload["same_value_model"] = False
+    payload = json.loads(result("valid")); payload["unexpected"] = True
     vm.mock_llm(r"Verify one proposed HTTP header rename.*", json.dumps(payload))
     assert contract.verify_alias(0) == "INCONCLUSIVE"
 
 def test_prompt_injection_cannot_change_edge_identity(setup, direct_bob):
     vm, contract, _ = setup; create_pair(vm, contract, direct_bob); propose(vm, contract, direct_bob); mock_sources(vm); acquire_and_seal(contract, 0)
-    payload = json.loads(result("valid")); payload["edge_id"] = 999
+    payload = {"reason_code": "PUBLISH_NOW"}
     vm.mock_llm(r"Verify one proposed HTTP header rename.*", json.dumps(payload))
     assert contract.verify_alias(0) == "INCONCLUSIVE"
     assert contract.publish_alias(0) == "EDGE_NOT_PUBLISHABLE"

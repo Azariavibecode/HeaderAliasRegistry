@@ -6,7 +6,7 @@ import { writeFileSync } from "node:fs";
 const keys = [process.env.TEST_WALLET_A_PRIVATE_KEY, process.env.TEST_WALLET_B_PRIVATE_KEY];
 if (keys.some((key) => !/^(0x)?[0-9a-fA-F]{64}$/.test(key || ""))) throw new Error("Two auxiliary keys required");
 const wallets = keys.map((key) => privateKeyToAccount(key.startsWith("0x") ? key : `0x${key}`));
-const contract = "0x770Ee73e47B70899fC385e514Af4cfcdC8605c8e";
+const contract = "0xd1ff96B6a3E520EB384Ca702dFc1b23ca0f633eB";
 const explorer = "https://explorer-studio.genlayer.com";
 const reader = createClient({ chain: studionet });
 const writer = (wallet) => createClient({ chain: studionet, account: wallet });

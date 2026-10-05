@@ -16,7 +16,7 @@ def test_graph_architecture_not_lineage_or_court():
 
 def test_source_and_positive_gate():
     for item in ["/git/commits/", "/git/trees/", "_blob_sha1(raw.body)", "hashlib.sha256(raw.body).hexdigest()",
-                 "same_direction", "same_purpose", "same_value_model", "scope_matches", "security_not_weakened",
+                 "DIRECTION_CHANGED", "PURPOSE_CHANGED", "VALUE_MODEL_CHANGED", "MIGRATION_SCOPE_MISMATCH", "SECURITY_WEAKENED",
                  "gl.eq_principle.strict_eq(evaluate)"]:
         assert item in SOURCE
     assert "gl.eq_principle.prompt_comparative" not in SOURCE

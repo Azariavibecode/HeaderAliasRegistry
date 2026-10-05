@@ -14,7 +14,7 @@ All sources must belong to the authority registered for the version pair. The mi
 
 ## Reasoning topology
 
-Exact consensus reads only the sealed bounded sections, performs no web acquisition, and compares a closed JSON result containing five explicit booleans plus a bounded verdict and reason. Because the schema has no free-form fields, `strict_eq` avoids an unnecessary second LLM comparison pass. `VERIFIED_ALIAS` is accepted only when all booleans are true. The model cannot publish an edge or decide collision state.
+Exact consensus reads only the sealed bounded sections, performs no web acquisition, and agrees on one bounded reason code. The prompt defines a fixed failure priority across direction, purpose, value model, security and migration scope. Deterministic code derives the verdict and confidence; only `FULLY_EQUIVALENT` can become `VERIFIED_ALIAS`. This compact result avoids both free-form disagreement and an unnecessary second LLM comparison pass. The model cannot publish an edge or decide collision state.
 
 ## Bipartite graph consequence
 
