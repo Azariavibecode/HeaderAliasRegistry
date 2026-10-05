@@ -302,10 +302,10 @@ class Contract(gl.Contract):
             except Exception:
                 return safe_result("SOURCE_UNVERIFIED", "SOURCE_INTEGRITY_FAILURE")
 
-        result_json = gl.eq_principle.prompt_comparative(
-            evaluate,
-            principle="Evidence identity, edge identity, verdict, reason, and every consequential semantic finding must match exactly.",
-        )
+        # The evaluator already emits a closed, fully validated JSON schema with no
+        # free-form fields. Exact equality is therefore the appropriate consensus
+        # rule and avoids a second LLM comparison pass that can time out on StudioNet.
+        result_json = gl.eq_principle.strict_eq(evaluate)
         result = json.loads(result_json)
         edge["verdict"] = result["verdict"]
         edge["reason_code"] = result["reason_code"]

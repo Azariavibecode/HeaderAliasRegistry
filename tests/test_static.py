@@ -17,9 +17,9 @@ def test_graph_architecture_not_lineage_or_court():
 def test_source_and_positive_gate():
     for item in ["/git/commits/", "/git/trees/", "_blob_sha1(raw.body)", "hashlib.sha256(raw.body).hexdigest()",
                  "same_direction", "same_purpose", "same_value_model", "scope_matches", "security_not_weakened",
-                 "gl.eq_principle.prompt_comparative"]:
+                 "gl.eq_principle.strict_eq(evaluate)"]:
         assert item in SOURCE
-    assert "gl.eq_principle.strict_eq" in SOURCE
+    assert "gl.eq_principle.prompt_comparative" not in SOURCE
 
 def test_no_admin_or_clock():
     for forbidden in ["self.owner", "deployer", "only_owner", "datetime.now", "time.time", "deadline"]:

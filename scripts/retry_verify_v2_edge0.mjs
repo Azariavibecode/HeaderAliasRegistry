@@ -1,0 +1,11 @@
+import { createClient } from "genlayer-js";
+import { studionet } from "genlayer-js/chains";
+import { TransactionStatus } from "genlayer-js/types";
+import { privateKeyToAccount } from "viem/accounts";
+const key=process.env.TEST_WALLET_A_PRIVATE_KEY; const account=privateKeyToAccount(key.startsWith("0x")?key:`0x${key}`);
+const address="0x770Ee73e47B70899fC385e514Af4cfcdC8605c8e"; const reader=createClient({chain:studionet}); const writer=createClient({chain:studionet,account});
+const before=JSON.parse(await reader.readContract({address,functionName:"get_edge",args:[0n]})); if(before.state!=="SEALED")throw Error(JSON.stringify(before));
+const hash=await writer.writeContract({address,functionName:"verify_alias",args:[0n]}); console.log(`retry_submitted: ${hash}`);
+const receipt=await reader.waitForTransactionReceipt({hash,status:TransactionStatus.FINALIZED,interval:3000,retries:150}); const tx=await reader.getTransaction({hash}); const after=JSON.parse(await reader.readContract({address,functionName:"get_edge",args:[0n]}));
+console.log(JSON.stringify({hash,status:receipt.status_name||receipt.status,result_name:tx.result_name,after},null,2));
+if(tx.result_name!=="MAJORITY_AGREE"||after.state!=="VERIFIED"||after.verdict!=="VERIFIED_ALIAS")process.exitCode=2;

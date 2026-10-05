@@ -2,7 +2,13 @@
   "name": "header-alias-registry",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "test": "python -m pytest -q"
+    "test": "python -m pytest -q",
+    "e2e:studionet": "node scripts/run_studionet_e2e_v2.mjs"
+  },
+  "dependencies": {
+    "genlayer-js": "^0.28.7",
+    "viem": "^2.38.6"
   }
 }
